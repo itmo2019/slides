@@ -9,3 +9,5 @@
   * [Часть 2](https://rawgit.com/urfu-2016/markup-slides/master/05-mo-2/index.html)
 3. Браузер
   * [Лекция Браузер из УрФУ](https://urfu-2018.github.io/slides/markup/07-browser/#/)
+4. JS и DOM
+  * [Лекция из УрФУ](https://urfu-2017.github.io/webdev-slides/06-browser-and-js/lection/index.html)
