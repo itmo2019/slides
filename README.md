@@ -13,3 +13,6 @@
   * [Лекция из УрФУ](https://urfu-2017.github.io/webdev-slides/06-browser-and-js/lection/index.html)
 5. Введение в react
   * [Лекция по React I](https://trixartem.github.io/07-react/index.html)
+6. React Advanced #1
+  * [Лекция React Advanced 1](https://rmbaad.github.io/08-react_advanced/) ([pdf](https://github.com/rmbaad/rmbaad.github.io/blob/master/08-react_advanced/react_advanced.pdf))
+
