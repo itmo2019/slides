@@ -15,4 +15,5 @@
   * [Лекция по React I](https://trixartem.github.io/07-react/index.html)
 6. React Advanced #1
   * [Лекция React Advanced 1](https://rmbaad.github.io/08-react_advanced/) ([pdf](https://github.com/rmbaad/rmbaad.github.io/blob/master/08-react_advanced/react_advanced.pdf))
-
+7. React Advanced #2
+  * [Лекция React Advanced 2](https://github.com/itmo2019/lections/raw/master/07-react-advanced/07.pdf)
