@@ -1,0 +1,7 @@
+{
+  "name": "slides",
+  "version": "1.0.0",
+  "main": ["js/reveal.js", "css/reveal.css"],
+  "description": "Slides about TypeScript and Webpack",
+  "ignore": ["**/.*", "node_modules", "bower_components"]
+}
