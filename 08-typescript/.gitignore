@@ -1,0 +1,9 @@
+# Dependencies
+/node_modules/
+
+# Logs
+npm-debug.log*
+
+# Artifacts
+/js/reveal.min.js
+/css/reveal.min.css

@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>TypeScript | ITMO</title>
+
+    <meta name="author" content="Evgeny Markov" />
+    <meta name="description" content="Slides about TypeScript and Webpack" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/reveal.css" />
+    <link rel="stylesheet" href="css/theme/white.css" id="theme" />
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/atom-one-light.css" />
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match(/print-pdf/gi)
+        ? 'css/print/pdf.css'
+        : 'css/print/paper.css';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+
+    <style>
+      h1,
+      h2,
+      h3 {
+        font-weight: 400 !important;
+      }
+
+      h1 {
+        font-family: Arial, sans-serif;
+        font-size: 2em !important;
+        text-transform: initial !important;
+      }
+
+      h2 {
+        font-family: Arial, sans-serif;
+        font-size: 1.4em !important;
+        text-transform: initial !important;
+      }
+
+      h3 {
+        font-family: Arial, sans-serif;
+        font-size: 1.1em !important;
+        text-transform: initial !important;
+      }
+
+      img {
+        border: none !important;
+        box-shadow: none !important;
+      }
+
+      pre {
+        box-shadow: none !important;
+      }
+
+      code {
+        max-height: unset !important;
+        background: #fff !important;
+      }
+
+      .type-error {
+        position: relative;
+
+        display: inline-block;
+      }
+
+      .type-error:before {
+        font-family: serif;
+        font-size: 0.5em;
+        font-weight: 600;
+
+        position: absolute;
+        top: 22px;
+
+        overflow: hidden;
+
+        width: 100%;
+
+        content: '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~';
+        letter-spacing: -1px;
+
+        color: red;
+      }
+
+      .type-error-comment > .hljs-comment {
+        color: rgba(255, 0, 0, 0.8);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide-theme center">
+          <h1>TypeScript</h1>
+          <p>
+            <a href="https://github.com/evgenymarkov">Evgeny Markov</a>
+          </p>
+        </section>
+
+        <section class="slide-content">
+          <h2>План лекции</h2>
+          <ol>
+            <li>Стандарт ECMAScript</li>
+            <li>Babel</li>
+            <li>TypeScript</li>
+          </ol>
+
+          <style>
+            .slide-content ol {
+              width: 100% !important;
+              font-size: 1.3em !important;
+              margin-top: 50px !important;
+            }
+          </style>
+        </section>
+
+        <section class="slide-early-history">
+          <h2>Mocha/LiveScript/JavaScript</h2>
+          <img src="./images/brendan-eich.jpg" alt="Brendan Eich" />
+        </section>
+
+        <section class="slide-ecmascript-pictures">
+          <h2>ECMAScript</h2>
+          <img src="./images/ecmascript.png" alt="ECMAScript" height="300px" />
+          <img src="./images/tc39.png" alt="TC39" height="200px" />
+        </section>
+
+        <section class="slide-ecmascript-text">
+          <h2>Эволюция ECMAScript</h2>
+          <ul>
+            <li>ES1, ES2 — первая редакция</li>
+            <li class="fragment">ES3 (1999) — RegExp, try/catch</li>
+            <li class="fragment">ES4 — ...</li>
+            <li class="fragment">
+              ES5 (2009) — строгий режим, геттеры и сеттеры, нативная поддержка JSON, новые методы
+              Array и Object
+            </li>
+          </ul>
+        </section>
+
+        <section class="slide-es5-example">
+          <h2>Пример кода на ES5</h2>
+          <pre class="js"><code data-trim>
+            function Student(firstName, lastName) {
+              this.firstName = firstName;
+              this.lastName = lastName;
+            };
+          </code></pre>
+
+          <pre class="js fragment"><code data-trim>
+            Object.defineProperty(Student.prototype, "name", {
+              get: function() {
+                return this.firstName + ' ' + this.lastName;
+              }
+            });
+          </code></pre>
+
+          <pre class="js fragment"><code data-trim>
+            Student.prototype.setSkills = function(skills) {
+              this.skills = skills || [];
+            };
+          </code></pre>
+        </section>
+
+        <section class="slide-ecmascript-today">
+          <h2>ES2015 (ES6)</h2>
+
+          <section>
+            <h3>Классы</h3>
+            <pre class="js"><code data-trim>
+              class Student {
+                constructor(firstName, lastName) {
+                  this.firstName = firstName;
+                  this.lastName = lastName;
+                }
+
+                get name() {
+                  return `${this.firstName} ${this.lastName}`;
+                }
+
+                setSkills(skills = []) {
+                  this.skills = skills;
+                }
+              }
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>let и const</h3>
+
+            <pre class="js"><code data-trim>
+              function foo() {
+                var apples = 5;
+              }
+            </code></pre>
+
+            <pre class="js fragment"><code data-trim>
+              {
+                let apples = 10;
+              }
+            </code></pre>
+
+            <pre class="js fragment"><code data-trim>
+              {
+                const apples = 15;
+              }
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Стрелочные функции</h3>
+
+            <pre class="js"><code data-trim>
+              // краткий синтаксис
+              const func = x => x * x;
+
+              // блочный синтаксис
+              const func = (x, y) => { return x + y; };
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Шаблонные строки</h3>
+
+            <div>
+              <pre class="js"><code data-trim>
+                `строка текста`
+
+                `строка текста 1
+                  строка текста 2`
+
+                `строка текста ${выражение} строка текста`
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>Деструктуризация массивов</h3>
+            <div>
+              <pre class="js"><code data-trim>
+                var zero, one, two;
+                var numbers = ['zero', 'one', 'two'];
+
+                zero = numbers[0];
+                one = numbers[1];
+                two = numbers[2];
+              </code></pre>
+
+              <pre class="js fragment"><code data-trim>
+                const numbers = ['zero', 'one', 'two'];
+                const [zero, one, two] = numbers;
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>Деструктуризация объектов</h3>
+            <div>
+              <pre class="js"><code data-trim>
+                var p, q;
+                var obj = { p: 42, q: true };
+
+                p = obj.p;
+                q = obj.q;
+              </code></pre>
+
+              <pre class="js fragment"><code data-trim>
+                const obj = { p: 42, q: true };
+                const { p, q } = obj;
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>Промисы</h3>
+
+            <div>
+              <pre class="js"><code data-trim>
+                const promise = new Promise((resolve, reject) => {
+                  setTimeout(() => resolve('result'), 1000);
+                  setTimeout(() => reject(new Error('ignored')), 2000);
+                });
+
+                promise.then(
+                  result => alert('Fulfilled: ' + result),
+                  error => alert('Rejected: ' + error)
+                );
+              </code></pre>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>ECMAScript 2016</h2>
+          <section>
+            <h3>Оператор возведения в степень</h3>
+
+            <div>
+              <pre class="js"><code data-trim>
+                2 ** 3 // 8
+                3 ** 2 // 9
+                3 ** 2.5 // 15.588457268119896
+                10 ** -1 // 0.1
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>Метод includes у Array и String</h3>
+
+            <div>
+              <pre class="js"><code data-trim>
+                const str = 'Быть или не быть вот в чём вопрос.';
+
+                str.includes('Быть'); // true
+                str.includes('вопрос'); // true
+                str.includes('несуществующий'); // false
+              </code></pre>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>ECMAScript 2017</h2>
+          <section>
+            <h3>async/await</h3>
+
+            <div>
+              <pre class="js"><code data-trim>
+                async function getAuthorAvatar(article) {
+                  const userResponse = await fetch(`/articles/${article}`);
+                  const { author } = await userResponse.json();
+
+                  const avatarResponse = await fetch(`/avatars/${author.id}`);
+                  const avatar = await avatarResponse.json();
+
+                  return avatar.url;
+                }
+              </code></pre>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>ECMAScript 2018</h2>
+          <section>
+            <h3>Операторы Rest и Spread для массивов</h3>
+
+            <div>
+              <pre class="js"><code data-trim>
+                const numbers = [1, 2, 3, 4, 5];
+                const [first, second, ...others] = numbers;
+                console.log(others); // [3, 4, 5]
+              </code></pre>
+
+              <p></p>
+
+              <pre class="js "><code data-trim>
+                const others = [3, 4, 5];
+                const numbers = [1, 2, ...others];
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>Операторы Rest и Spread для объектов</h3>
+
+            <pre class="js "><code data-trim>
+              const numbers = {
+                zero: 1,
+                one: 2,
+                three: 3,
+                four: 4
+              };
+              const { zero, one, ...others } = numbers;
+              console.log(others); // { three: 3, four: 4 }
+            </code></pre>
+
+            <p></p>
+
+            <pre class="js "><code data-trim>
+              const others = { three: 3, four: 4 };
+              const numbers = { zero: 1, one: 2, ...others };
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Снова промисы</h3>
+            <div>
+              <pre class="js"><code data-trim>
+                fetch('file.json')
+                  .then(data => data.json())
+                  .catch(error => console.error(error))
+                  .finally(() => console.log('finished'));
+              </code></pre>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>ECMAScript 2019</h2>
+
+          <section>
+            <h3>Optional Catch Binding</h3>
+
+            <div>
+              <pre class="js"><code data-trim>
+                  // До
+                  try {
+                      ...
+                  } catch (error) {
+                      ...
+                  }
+
+                  // После
+                  try {
+                      ...
+                  } catch {
+                      ...
+                  }
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>Array flat & flatMap</h3>
+
+            <pre class="js"><code data-trim>
+              const nestedArrays = ['a', ['b', 'c'], ['d', ['e', 'f']]];
+              const flattenArray = nestedArrays.flat(2);
+              // ['a', 'b', 'c', 'd', 'e', 'f']
+            </code></pre>
+
+            <pre class="js"><code data-trim>
+              const words = ['мой любимый', 'ванильный раф'];
+              const splittedWords = words.map(chunk => chunk.split(' '));
+              // [['мой', 'любимый'], ['ванильный', 'раф']]
+              const flattenWords = words.flatMap(chunk => chunk.split(' '));
+              // ['мой', 'любимый', 'ванильный', 'раф']
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Object.fromEntries</h3>
+
+            <pre class="js"><code data-trim>
+              const arr = [['name', 'Harry'], ['surname', 'Potter']];
+              const obj = Object.fromEntries(arr);
+              // { name: 'Harry', surname: 'Potter' }
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>String trimStart() & trimEnd()</h3>
+
+            <pre class="js"><code data-trim>
+              const one = '      Привет и позвольте ';
+              const two = 'нам начать.        ';
+
+              one.trimStart() + two.trimEnd()
+              // 'Привет и позвольте нам начать.'
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Стабильная сортировка (Timsort)</h3>
+
+            <img
+              src="./images/web-tooling-benchmark.svg"
+              alt="Sort algorithms benchmark"
+              height="400px"
+            />
+          </section>
+        </section>
+
+        <section>
+          <h2>Будущее</h2>
+
+          <section class="slide-ecma-next-classes">
+            <h3>Изменения в классах</h3>
+
+            <pre class="js"><code data-trim>
+              class Cat extends Animal {
+                #name;
+                static #count = 0;
+
+                static getCount() {
+                  return `На свете ${Cat.#count} кошечек.`;
+                }
+
+                static #increaseCount() {
+                  Cat.#count++;
+                }
+
+                constructor(name = 2) {
+                  super();
+                  this.name = name;
+                  Cat.#increaseCount();
+                }
+              }
+            </code></pre>
+          </section>
+        </section>
+
+        <section class="slide-ecma-future">
+          <h2>Дальнейшее развитие ECMAScript</h2>
+          <img src="./images/github.png" width="20%" alt="GitHub Logo" />
+          <p><a href="https://github.com/tc39/ecma262">tc39/ecma262</a></p>
+        </section>
+
+        <section class="center">
+          <p>Можно ли всё это использовать прямо сейчас?</p>
+        </section>
+
+        <section class="slide-browsers">
+          <h2>Браузеры в России</h2>
+
+          <figure class="slide-browsers__screenshot">
+            <img
+              src="./images/browsers.png"
+              alt="Браузеры в России по данным Яндекс.Метрики"
+              width="100%"
+            />
+            <caption>
+              <small>Данные из отчёта «Яндекс.Радара» на 10 апреля 2019</small>
+            </caption>
+          </figure>
+        </section>
+
+        <section class="center slide-compatibility">
+          <h2>Таблица совместимости</h2>
+          <a class="text-center" href="https://kangax.github.io/compat-table" target="_blank">
+            https://kangax.github.io/compat-table
+          </a>
+          <br />
+          <div><img src="./images/compat-table.png" height="450px" /></div>
+        </section>
+
+        <section class="slide-venn-esnext">
+          <h2>Разный уровень поддержки языка</h2>
+          <div><img src="./images/venn-esnext.png" width="40%" alt="Venn Diagram" /></div>
+
+          <div class="fragment">Как решать проблему?</div>
+        </section>
+
+        <section>
+          <p>Транспиляция — это процесс перевода исходного кода одного языка в другой</p>
+          <div><img src="./images/transpilation.png" width="100%" alt="Transpilation" /></div>
+        </section>
+
+        <section class="slide-babel">
+          <h2 class="slide-babel__babel-logo">
+            <img src="./images/babel-logo.png" width="40%" alt="Babel logo" />
+          </h2>
+          <p><a href="https://babeljs.io/en/repl">Babel Playground</a></p>
+          <div><img src="./images/how-babel-works.png" width="100%" alt="How Babel works" /></div>
+        </section>
+
+        <section class="slide-babel-class">
+          <h2>Код на ES2015</h2>
+          <pre class="js"><code data-trim>
+            class Student {
+              constructor(firstName, lastName) {
+                this.firstName = firstName;
+                this.lastName = lastName;
+              }
+
+              setSkills(skills = []) {
+                this.skills = skills;
+              }
+            }
+          </code></pre>
+        </section>
+
+        <section class="slide-babel-class">
+          <h2>Код после транспиляции</h2>
+          <pre class="js size-XS"><code data-trim>
+            var Student = function () {
+              function Student(firstName, lastName) {
+                _classCallCheck(this, Student);
+
+                this.firstName = firstName;
+                this.lastName = lastName;
+              }
+
+              _createClass(Student, [{
+                key: "setSkills",
+                value: function setSkills() {
+                  var skills =
+                    arguments.length > 0 &&
+                    arguments[0] !== undefined ? arguments[0] : [];
+
+                  this.skills = skills;
+                }
+              }]);
+
+              return Student;
+            }();
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Система плагинов</h2>
+          <p><a href="https://babeljs.io/docs/en/plugins">Plugins</a></p>
+          <ul>
+            <li>arrow-functions</li>
+            <li>classes</li>
+            <li>destructuring</li>
+            <li>duplicate-keys</li>
+            <li>for-of</li>
+            <li>...</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Эксперименты</h2>
+
+          <pre class="js"><code data-trim>
+            const nestedNumbers = {
+              one: {
+                two: {
+                  three: 42
+                }
+              }
+            };
+
+            const answer = nestedNumbers?.one?.two?.three; // 42
+
+            const safe = nestedNumbers?.four?.five?.baz; // undefined
+          </code></pre>
+        </section>
+
+        <section class="center"><img src="./images/pause.png" width="100%" alt="Pause" /></section>
+
+        <section class="slide-js-quiz">
+          <h2>Что не так?</h2>
+          <pre class="js"><code data-trim>
+            function addNumbers(a, b) {
+              return a + b;
+            }
+          </code></pre>
+
+          <pre class="js"><code data-trim>
+            addNumbers(2, 2); // 4
+          </code></pre>
+
+          <div class="code-question-answer">
+            <pre class="js fragment code-question"><code data-trim>
+              addNumbers(2, '2');
+            </code></pre>
+            <pre class="js fragment code-answer"><code data-trim>
+              // '22'
+            </code></pre>
+          </div>
+
+          <div class="code-question-answer">
+            <pre class="js fragment code-question"><code data-trim>
+              addNumbers([], []);
+            </code></pre>
+            <pre class="js fragment code-answer"><code data-trim>
+              // ''
+            </code></pre>
+          </div>
+
+          <div class="code-question-answer">
+            <pre class="js fragment code-question"><code data-trim>
+              addNumbers([], {});
+            </code></pre>
+            <pre class="js fragment code-answer"><code data-trim>
+              // [object Object]
+            </code></pre>
+          </div>
+
+          <div class="code-question-answer">
+            <pre class="js fragment code-question"><code data-trim>
+              addNumbers({}, []);
+            </code></pre>
+            <pre class="js fragment code-answer"><code data-trim>
+              // 0
+            </code></pre>
+          </div>
+
+          <style>
+            .code-question {
+              margin-bottom: 5px !important;
+            }
+
+            .code-answer {
+              margin-top: 5px !important;
+            }
+          </style>
+        </section>
+
+        <section>
+          <h2>Как исправить?</h2>
+
+          <div>
+            <pre class="js fragment"><code data-trim>
+              function addNumbers(a, b) {
+                if (typeof a !== 'number' || typeof b !== 'number') {
+                  throw new Error();
+                }
+
+                return a + b;
+              }
+            </code></pre>
+          </div>
+        </section>
+
+        <section>
+          <h2>Что в IDE?</h2>
+          <div>
+            <img src="./images/code-ide-no-completion.png" width="100%" alt="no IDE completion" />
+          </div>
+        </section>
+
+        <section>
+          <h2>Слабая динамическая типизация</h2>
+          <ul>
+            <li>Неявные преобразования</li>
+            <li>Типы становятся известны на этапе выполнения</li>
+          </ul>
+        </section>
+
+        <section class="slide-type-systems">
+          <h2>Альтернативные языки</h2>
+
+          <img src="./images/type-systems.png" alt="Type Systems" style="margin-top: 100px" />
+        </section>
+
+        <section class="slide-typescript">
+          <h2 class="slide-typescript__typescript-logo">
+            <img src="images/typescript-logo.png" width="40%" alt="TypeScript logo" />
+          </h2>
+          <p><a href="http://www.typescriptlang.org/play/">TypeScript Playground</a></p>
+          <div>
+            <img src="./images/venn-typescript.png" width="40%" alt="TypeScript venn diagram" />
+          </div>
+        </section>
+
+        <section class="slide-typescript-author">
+          <h2>Автор языка</h2>
+
+          <figure class="slide-typescript-author__author">
+            <div class="slide-typescript-author__author-photo">
+              <img src="./images/anders-hejlsberg.jpg" alt="Anders Hejlsberg" />
+            </div>
+            <caption class="slide-typescript-author__author-name">
+              <div><small> Андерс Хейлсберг </small></div>
+              <small>Известен также по Turbo Pascal, Delphi, C#</small>
+            </caption>
+          </figure>
+        </section>
+
+        <section>
+          <h2>Возможности</h2>
+          <ul>
+            <li>ES2015-ESNext</li>
+            <li class="fragment">Транспиляция в ES3, ES5, ES2015, ...</li>
+            <li class="fragment">Аннотации типов и проверка</li>
+            <li class="fragment">Вывод типов</li>
+            <li class="fragment">Интерфейсы</li>
+            <li class="fragment">Обобщённые типы</li>
+            <li class="fragment">Кортежи</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Примитивные типы данных</h2>
+
+          <section>
+            <h3>Boolean</h3>
+
+            <pre class="ts"><code data-trim>
+              let isDone: boolean = false;
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Number</h3>
+
+            <pre class="ts"><code data-trim>
+              const decimal: number = 6;
+              const hex: number = 0xf00d;
+              const binary: number = 0b1010;
+              const octal: number = 0o744;
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>String</h3>
+
+            <pre class="ts"><code data-trim>
+              const color1: string = "blue";
+              const color2: string = 'red';
+
+              const fullName: string = `Arkady`;
+              const sentence: string = `Hello, my name is ${fullName}.`;
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>null, undefined</h3>
+
+            <pre class="ts"><code data-trim>
+              const u: undefined = undefined;
+              const n: null = null;
+            </code></pre>
+          </section>
+        </section>
+
+        <section>
+          <h2>Array</h2>
+
+          <pre class="ts"><code data-trim>
+            const list1: number[] = [1, 2, 3];
+            const list2: Array&lt;number&gt; = [1, 2, 3];
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Tuple</h2>
+
+          <pre class="ts size-S"><code data-trim>
+            // Объявление кортежа
+            let point: [number, number];
+
+            // Некорректная инициализация
+            point = [10, 'hello']; // Error
+
+            // Инициализация
+            point = [20, 10]; // OK
+
+            // Обращение
+            point[1]; // 10
+
+            // Деструктуризация
+            const [first, second] = point;
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Enum</h2>
+
+          <section>
+            <pre class="ts"><code data-trim>
+              enum Color {
+                Red,
+                Green,
+                Blue
+              }
+
+              const c: Color = Color.Green;
+            </code></pre>
+          </section>
+
+          <section>
+            <pre class="ts"><code data-trim>
+              enum Color {
+                Red = 5,
+                Green = 7,
+                Blue = 9
+              }
+
+              enum Color {
+                Red = '#F00',
+                Green = '#0F0',
+                Blue = '#00F'
+              }
+            </code></pre>
+          </section>
+        </section>
+
+        <section>
+          <h2>Object</h2>
+
+          <div class="indented-content code-two-columns">
+            <div>
+              <pre class="ts"><code data-trim>
+                const colors: object = {
+                  red: '#F00',
+                  green: '#0F0',
+                  blue: '#00F'
+                }
+              </code></pre>
+            </div>
+            <div>
+              <pre class="ts"><code data-trim>
+                const settings: {
+                  color: string;
+                  delay: number;
+                  retry: boolean;
+                } = {
+                  color: '#F00',
+                  delay: 2000,
+                  retry: false
+                };
+              </code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Any</h2>
+
+          <pre class="ts"><code data-trim>
+            let notSure: any = 4;
+            notSure = "maybe a string instead";
+            notSure = false;
+
+            let notSure: any = 4;
+            notSure.ifItExists(); // Ошибка в рантайме
+            notSure.toFixed(); // Всё ок, toFixed есть в рантайме
+
+            let prettySure: object = 4;
+            prettySure.toFixed(); // toFixed нет у object
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Void и Never</h2>
+
+          <pre class="ts"><code data-trim>
+            function warnUser(): void {
+              console.log('This is my warning message');
+            }
+
+            function error(message: string): never {
+                throw new Error(message);
+            }
+
+            function infiniteLoop(): never {
+                while (true) {}
+            }
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Приведение типов</h2>
+
+          <pre class="ts"><code data-trim>
+            const someValue: any = 'this is a string';
+
+            const strLength1: number = (&#x3C;string&#x3E;someValue).length;
+            const strLength2: number = (someValue as string).length;
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Функции</h2>
+
+          <section>
+            <div>
+              <pre class="ts"><code data-trim>
+                function add(x: number, y: number): number {
+                  return x + y;
+                }
+              </code></pre>
+            </div>
+
+            <div class="fragment">
+              <pre class="ts"><code data-trim>
+                const add = (x: number, y: number): number => x + y;
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <div>
+              <pre class="ts"><code data-trim>
+                  type ActionGuard = (req: Request) => boolean;
+
+                  const checkIsAuthorized: ActionGuard = req => {
+                    return Boolean(req.user && req.user.status === 'AUTHORIZED');
+                  };
+                </code></pre>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h3>Интерфейсы</h3>
+
+            <pre class="ts"><code data-trim>
+              function printLogin(user: { login: string }) {
+                console.log(user.login);
+              }
+
+              const user = {
+                login: 'savichev'
+              };
+
+              printLogin(user);
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Интерфейсы</h3>
+
+            <pre class="ts"><code data-trim>
+              interface IUser {
+                login: string;
+              }
+
+              function printLogin(user: IUser) {
+                console.log(user.login);
+              }
+
+              const user = {
+                username: 'savichev'
+              };
+
+              printLogin(user);
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Опциональные свойства</h3>
+            <pre class="ts"><code data-trim>
+              interface ISquareConfig {
+                color?: string;
+              }
+
+              function createSquare(config: SquareConfig) {
+                const newSquare = { color: "white", area: 100 };
+
+                if (config.color) {
+                    newSquare.color = config.color;
+                }
+
+                return newSquare;
+              }
+
+              let mySquare = createSquare({ color: "black" });
+            </code></pre>
+          </section>
+        </section>
+
+        <section>
+          <h2>Классы</h2>
+
+          <section>
+            <div>
+              <pre class="ts size-XS"><code data-trim>
+                interface IMakesSound {
+                  makeSound(): void;
+                }
+              </code></pre>
+
+              <p></p>
+
+              <pre class="ts size-XS"><code data-trim>
+                class Python implements IMakesSound {
+                  private readonly _length: number;
+
+                  public get length() {
+                    return this._length / 100;
+                  }
+
+                  constructor(length: number) {
+                    this._length = length;
+                  }
+
+                  protected makeSound() {
+                    console.log('Ssssss!');
+                  }
+                }
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <div>
+              <pre class="ts"><code data-trim>
+                abstract class Snake {
+                  private readonly _length: number;
+
+                  public get length() {
+                    return this._length / 100;
+                  }
+
+                  constructor(length: number) {
+                    this._length = length;
+                  }
+
+                  protected abstract makeSound(): void;
+                }
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <div>
+              <pre class="ts size-M"><code data-trim>
+                class Python extends Snake {
+                  private static population = 10000;
+
+                  public static incrementPopulation() {
+                    Python.population++;
+                  }
+
+                  constructor(length: number) {
+                    super(length);
+                    Python.incrementPopulation();
+                  }
+
+                  protected makeSound() {
+                    console.log('Ssssss!');
+                  }
+                }
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <pre class="ts size-XS"><code data-trim>
+              var Snake = (function() {
+                function Snake(length) {
+                  this._length = length;
+                }
+
+                Object.defineProperty(
+                  Snake.prototype,
+                  "length",
+                  {
+                    get: function() {
+                      return this._length / 100;
+                    },
+                    enumerable: true,
+                    configurable: true
+                  }
+                );
+
+                return Snake;
+              })();
+            </code></pre>
+          </section>
+
+          <section class="slide-compiled-ts-class">
+            <pre class="ts size-XS"><code data-trim>
+              var Python = (function(_super) {
+                __extends(Python, _super);
+
+                function Python(length) {
+                  var _this = _super.call(this, length) || this;
+                  Python.incrementPopulation();
+                  return _this;
+                }
+
+                Python.incrementPopulation = function() {
+                  Python.population++;
+                };
+
+                Python.prototype.makeSound = function() {
+                  console.log("Ssssss!");
+                };
+
+                Python.population = 10000;
+
+                return Python;
+              })(Snake);
+            </code></pre>
+
+            <style>
+              .slide-compiled-ts-class {
+                padding-top: 0px !important;
+              }
+
+              .slide-compiled-ts-class pre {
+                margin-top: 0px !important;
+              }
+            </style>
+          </section>
+        </section>
+
+        <section class="center"><img src="./images/pause.png" width="100%" alt="Pause" /></section>
+
+        <section>
+          <h2>Вывод типов</h2>
+
+          <pre class="ts"><code data-noescape>
+const n: number = 42;
+const s: string = 'Hello, world!';
+const a: number[] = [1, 2, 3, 4];
+
+            <span class="fragment" data-fragment-index="1">
+const n = 42;
+const s = 'Hello, world!';
+const a = [1, 2, 3, 4];
+            </span></code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Вывод типов</h2>
+
+          <pre class="ts"><code data-noescape>
+function greetWith(name: string): string {
+  return `Hello, ${name}!`;
+}
+
+            <span class="fragment" data-fragment-index="1">
+function greetWith(name: string) {
+  return `Hello, ${name}!`;
+}
+            </span></code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Наиболее общий тип</h2>
+
+          <pre class="ts"><code data-noescape>
+let shapes = [new Circle(), new Square()];
+
+          <span class="fragment">
+shapes.push(new Triangle());
+          </span></code>
+          </pre>
+
+          <p><img src="./images/common-type.png" /></p>
+        </section>
+
+        <section>
+          <h2>Наиболее общий тип</h2>
+
+          <pre class="ts"><code data-noescape>
+let shapes = [new Circle(), new Square()];
+            <span class="type-error-comment">
+// Argument of type 'Triangle'
+// is not assignable to parameter of type 'Square | Circle'.</span>
+shapes.push(<span class="type-error">new Triangle()</span>);
+          </code></pre>
+
+          <p><img src="./images/common-type.png" /></p>
+        </section>
+
+        <section>
+          <h2>Наиболее общий тип</h2>
+
+          <pre class="ts"><code>
+let shapes = [new Circle(), new Square()];
+
+
+shapes.push(new Triangle());
+          </code></pre>
+
+          <p><img src="./images/common-type.png" /></p>
+        </section>
+
+        <section>
+          <h2>Наиболее общий тип</h2>
+
+          <pre class="ts"><code data-noescape>
+let shapes = [<mark>new Circle()</mark>, new Square()];
+
+
+shapes.push(new Triangle());
+          </code></pre>
+
+          <p><img src="./images/common-type-1.png" /></p>
+        </section>
+
+        <section>
+          <h2>Наиболее общий тип</h2>
+
+          <pre class="ts"><code data-noescape>
+let shapes = [new Circle(), <mark>new Square()</mark>];
+
+
+shapes.push(new Triangle());
+          </code></pre>
+
+          <p><img src="./images/common-type-2.png" /></p>
+        </section>
+
+        <section>
+          <h2>Наиболее общий тип</h2>
+
+          <pre class="ts"><code data-noescape>
+let shapes = [new Circle(), new Square()];
+        <span class="type-error-comment">
+// Argument of type 'Triangle'
+// is not assignable to parameter of type 'Square | Circle'.</span>
+shapes.push(<span class="type-error">new Triangle()</span>);
+          </code></pre>
+
+          <p><img src="./images/common-type-3.png" /></p>
+        </section>
+
+        <section>
+          <h2>Наиболее общий тип</h2>
+
+          <pre class="ts"><code data-noescape>
+let shapes: <mark>Shape[]</mark> = [new Circle(), new Square()];
+
+
+shapes.push(new Triangle());
+          </code></pre>
+
+          <p><img src="./images/common-type-4.png" /></p>
+        </section>
+
+        <section>
+          <h2>Совместимость типов</h2>
+
+          <pre class="ts"><code data-noescape>
+class Human {
+    name: string;
+}
+
+class Robot {
+    name: string;
+}
+            <span class="fragment" data-fragment-index="1">
+let human: Human = new Robot();</span></code></pre>
+
+          <p class="fragment" data-fragment-index="1">🤖</p>
+        </section>
+
+        <section>
+          <h2>Тип ≡ Множество</h2>
+          <ul>
+            <li>Можем пересекать типы &nbsp; <strong>&</strong></li>
+            <li>Можем объединять типы &nbsp; <strong>|</strong></li>
+            <li>Можем вычитать из одного типа другой</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Пересечения (Intersection Types)</h2>
+
+          <pre class="ts"><code data-noescape>
+interface IStudent {
+  age: number;
+  name: string;
+}
+
+interface IWorker {
+  companyName: string;
+}
+
+type IWorkingStudent = IStudent & IWorker;
+
+const student: IWorkingStudent = {
+  age: 21
+  name: 'Irina'
+  companyName: 'Yandex'
+};
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Пересечения (Intersection Types)</h2>
+
+          <pre class="ts"><code data-noescape>
+interface IStudent {
+  id: number;
+  age: number;
+  name: string;
+}
+
+interface IWorker {
+  id: string;
+  companyName: string;
+}
+
+type IWorkingStudent = IStudent & IWorker;
+
+const student: IWorkingStudent = {
+  <span class="type-error-comment">// Type 'number' is not assignable to type 'number & string'</span>
+  id: 1,
+  ...
+};
+            </code></pre>
+        </section>
+
+        <section>
+          <h2>Объединения (Union Types)</h2>
+
+          <pre class="ts"><code data-noescape>
+interface IStudent {
+  learn(): void;
+}
+
+interface ITeacher {
+  learn(): void;
+  teach(): void;
+}
+
+function getPerson(): IStudent | ITeacher {
+  // ...
+}
+
+const person = getPerson();
+person.learn(); // Ok
+person.teach(); // Compilation error
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Объединения (Union Types)</h2>
+
+          <pre class="ts"><code data-noescape>
+function padLeft(value: string, padding: any) {
+  if (typeof padding === 'number') {
+      return Array(padding + 1).join(' ') + value;
+  }
+
+  if (typeof padding === 'string') {
+      return padding + value;
+  }
+
+  throw new Error(`Expected string or number, got '${padding}'.`);
+}
+
+padLeft('Hello world', 4); // Ok, '    Hello world'
+<span class="fragment">padLeft('Hello world', true); // Runtime error</span>
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Объединения (Union Types)</h2>
+
+          <pre class="ts"><code data-noescape>
+function padLeft(value: string, padding: string | number) {
+  // ...
+}
+
+<span class="fragment">padLeft('Hello world', true); // Compilation error</span>
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Out of scope</h2>
+
+          <ul>
+            <li>Type Guards</li>
+            <li>Type Aliases</li>
+            <li>Index types</li>
+            <li>Mapped types</li>
+            <li>Lookup types</li>
+            <li>...</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Почитать</h2>
+          <ul>
+            <li>
+              <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html">
+                🇺🇸 TypeScript Handbook
+              </a>
+            </li>
+            <li>
+              <a href="https://basarat.gitbooks.io/typescript/docs/getting-started.html">
+                🇺🇸 TypeScript Deep Dive
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Посмотреть</h2>
+          <ul>
+            <li>
+              <a href="https://www.youtube.com/watch?v=tybjhHPj3io">
+                🇷🇺 Андрей Морозов (Яндекс) — Типизация
+              </a>
+            </li>
+            <li>
+              <a href="https://www.youtube.com/watch?v=srqqwuqzYMM">
+                🇷🇺 Андрей Старовойт (JetBrains) — Эволюция TypeScript
+              </a>
+            </li>
+            <li>
+              <a href="https://www.youtube.com/watch?v=_3n4JdZdXWo">
+                🇷🇺 Константин Кичинский (Microsoft) — Разработка на TypeScript
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <section class="center">
+          <h2>Спасибо!</h2>
+          <h2>Вопросы?</h2>
+        </section>
+      </div>
+    </div>
+
+    <script src="js/reveal.js"></script>
+    <script>
+      Reveal.initialize({
+        transition: 'none',
+        controls: true,
+        progress: true,
+        center: false,
+        hash: true,
+
+        dependencies: [
+          {
+            src: 'plugin/markdown/marked.js',
+            condition: function() {
+              return !!document.querySelector('[data-markdown]');
+            }
+          },
+          {
+            src: 'plugin/markdown/markdown.js',
+            condition: function() {
+              return !!document.querySelector('[data-markdown]');
+            }
+          },
+          { src: 'plugin/highlight/highlight.js', async: true },
+          { src: 'plugin/search/search.js', async: true },
+          { src: 'plugin/zoom-js/zoom.js', async: true },
+          { src: 'plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+  </body>
+</html>
